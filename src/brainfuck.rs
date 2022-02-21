@@ -140,11 +140,15 @@ impl VMCore {
             match opcode {
 
                 Opcodes::DATA_VALUE_INC => {
-                    self.data[self.dp] = (self.data[self.dp] + 1) & 255;
+                    let mut value: i16 = self.data[self.dp] as i16;
+                    value = (value + 1) & 255;
+                    self.data[self.dp] = value as u8;
                 },
 
                 Opcodes::DATA_VALUE_DEC => {
-                    self.data[self.dp] = (self.data[self.dp] - 1) & 255;
+                    let mut value: i16 = self.data[self.dp] as i16;
+                    value = (value - 1) & 255;
+                    self.data[self.dp] = value as u8;
                 },
 
                 Opcodes::DATA_PTR_INC => {
