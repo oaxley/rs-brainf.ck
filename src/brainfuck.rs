@@ -192,3 +192,18 @@ impl VMCore {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_vm_core() {
+        let a = VMCore::new();
+        assert_eq!(a.pc, 0);
+        assert_eq!(a.dp, 0);
+        assert_eq!(a.code.capacity(), CODE_SIZE);
+        assert_eq!(a.data.len(), DATA_SIZE);
+    }
+
+}
