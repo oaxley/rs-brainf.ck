@@ -21,7 +21,6 @@ const DATA_SIZE: usize = 1 << 15;       // max data size is 32,768 bytes
 //----- structures
 
 // Opcodes definition
-#[non_exhaustive]
 struct Opcodes;
 
 impl Opcodes {
