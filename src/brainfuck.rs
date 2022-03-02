@@ -204,6 +204,53 @@ mod tests {
         assert_eq!(a.dp, 0);
         assert_eq!(a.code.capacity(), CODE_SIZE);
         assert_eq!(a.data.len(), DATA_SIZE);
+        assert_eq!(a.jumps.len(), 0);
     }
 
+    #[test]
+    fn compute_jumps_unbalanced_one() {
+        let mut a = VMCore::new();
+        a.code.push(Opcodes::JUMP_FWD);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::JUMP_BCK);
+        a.code.push(Opcodes::JUMP_BCK);
+
+        assert_eq!(a.compute_jumps(4), Err("Error: unbalanced number of '[' and ']' in the source code!".to_string()))
+    }
+
+    #[test]
+    fn compute_jumps_unbalanced_two() {
+        let mut a = VMCore::new();
+        a.code.push(Opcodes::JUMP_FWD);
+        a.code.push(Opcodes::JUMP_FWD);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::JUMP_BCK);
+
+        assert_eq!(a.compute_jumps(4), Err("Error: unbalanced number of '[' and ']' in the source code!".to_string()))
+    }
+
+    #[test]
+    fn compute_jumps_one_loop_correct() {
+        let mut a = VMCore::new();
+
+        // this code counts from 0 to 4
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::JUMP_FWD);
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::JUMP_BCK);
+
+        // compute jumps
+        a.compute_jumps(11).unwrap();
+
+        // assess if the jumps are correctly computed
+        assert_eq!(a.jumps[&5], 11);
+        assert_eq!(a.jumps[&10], 6);
+    }
 }
