@@ -90,6 +90,39 @@ impl VMCore {
         Ok(())
     }
 
+    fn data_value_inc(&mut self) {
+        let mut value: i16 = self.data[self.dp] as i16;
+        value = (value + 1) & 255;
+        self.data[self.dp] = value as u8;
+    }
+
+    fn data_value_dec(&mut self) {
+        let mut value: i16 = self.data[self.dp] as i16;
+        value = (value - 1) & 255;
+        self.data[self.dp] = value as u8;
+    }
+
+    fn data_ptr_inc(&mut self) {
+        self.dp = (self.dp + 1) & (DATA_SIZE - 1);
+    }
+
+    fn data_ptr_dec(&mut self) {
+        self.dp = (self.dp - 1) & (DATA_SIZE - 1);
+    }
+
+    fn jump_fwd(&mut self) {
+        if self.data[self.dp] == 0 {
+            let value = self.pc - 1;
+            self.pc = self.jumps[&value];
+        }
+    }
+
+    fn jump_bck(&mut self) {
+        if self.data[self.dp] != 0 {
+            let value = self.pc - 1;
+            self.pc = self.jumps[&value];
+        }
+    }
 
     //----- public functions
 
@@ -138,39 +171,12 @@ impl VMCore {
             // opcode lookup
             match opcode {
 
-                Opcodes::DATA_VALUE_INC => {
-                    let mut value: i16 = self.data[self.dp] as i16;
-                    value = (value + 1) & 255;
-                    self.data[self.dp] = value as u8;
-                },
-
-                Opcodes::DATA_VALUE_DEC => {
-                    let mut value: i16 = self.data[self.dp] as i16;
-                    value = (value - 1) & 255;
-                    self.data[self.dp] = value as u8;
-                },
-
-                Opcodes::DATA_PTR_INC => {
-                    self.dp = (self.dp + 1) & (DATA_SIZE - 1);
-                },
-
-                Opcodes::DATA_PTR_DEC => {
-                    self.dp = (self.dp - 1) & (DATA_SIZE - 1);
-                },
-
-                Opcodes::JUMP_FWD => {
-                    if self.data[self.dp] == 0 {
-                        let value = self.pc - 1;
-                        self.pc = self.jumps[&value];
-                    }
-                },
-
-                Opcodes::JUMP_BCK => {
-                    if self.data[self.dp] != 0 {
-                        let value = self.pc - 1;
-                        self.pc = self.jumps[&value];
-                    }
-                },
+                Opcodes::DATA_VALUE_INC => self.data_value_inc(),
+                Opcodes::DATA_VALUE_DEC => self.data_value_dec(),
+                Opcodes::DATA_PTR_INC => self.data_ptr_inc(),
+                Opcodes::DATA_PTR_DEC => self.data_ptr_dec(),
+                Opcodes::JUMP_FWD => self.jump_fwd(),
+                Opcodes::JUMP_BCK => self.jump_bck(),
 
                 Opcodes::WRITE_CHAR => {
                     print!("{}", self.data[self.dp] as char);
