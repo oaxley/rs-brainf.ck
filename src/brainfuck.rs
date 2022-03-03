@@ -259,4 +259,35 @@ mod tests {
         assert_eq!(a.jumps[&5], 11);
         assert_eq!(a.jumps[&10], 6);
     }
+
+    #[test]
+    fn data_value_inc() {
+        let mut a = VMCore::new();
+
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+
+        a.execute();
+
+        assert_eq!(a.data[0], 5);
+    }
+
+    #[test]
+    fn data_value_dec() {
+        let mut a = VMCore::new();
+
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+
+        a.data[0] = 7;
+        a.execute();
+
+        assert_eq!(a.data[0], 2);
+    }
 }
