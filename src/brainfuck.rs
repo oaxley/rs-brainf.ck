@@ -290,4 +290,35 @@ mod tests {
 
         assert_eq!(a.data[0], 2);
     }
+
+    #[test]
+    fn data_value_inc_overflow() {
+        let mut a = VMCore::new();
+
+        a.data[0] = 253;
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.execute();
+
+        assert_eq!(a.data[0], 2);
+    }
+
+    #[test]
+    fn data_value_dec_overflow() {
+        let mut a = VMCore::new();
+
+        a.data[0] = 2;
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.execute();
+
+        assert_eq!(a.data[0], 253);
+    }
+
 }
