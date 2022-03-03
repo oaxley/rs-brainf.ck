@@ -107,7 +107,10 @@ impl VMCore {
     }
 
     fn data_ptr_dec(&mut self) {
-        self.dp = (self.dp - 1) & (DATA_SIZE - 1);
+        let mut value: i32 = self.dp as i32;
+        let max = DATA_SIZE as i32;
+        value = (value - 1) & (max - 1) ;
+        self.dp = value as usize;
     }
 
     fn jump_fwd(&mut self) {
