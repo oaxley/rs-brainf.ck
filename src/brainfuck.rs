@@ -324,4 +324,54 @@ mod tests {
         assert_eq!(a.data[0], 253);
     }
 
+    #[test]
+    fn data_ptr_inc() {
+        let mut a = VMCore::new();
+
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.execute();
+
+        assert_eq!(a.dp, 1);
+    }
+
+    #[test]
+    fn data_ptr_inc_overflow() {
+        let mut a = VMCore::new();
+
+        a.dp = DATA_SIZE - 2;
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.execute();
+
+        assert_eq!(a.dp, 2);
+    }
+
+    #[test]
+    fn data_ptr_dec() {
+        let mut a = VMCore::new();
+
+        a.dp = 10;
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.execute();
+
+        assert_eq!(a.dp, 9);
+    }
+
+    #[test]
+    fn data_ptr_dec_overflow() {
+        let mut a = VMCore::new();
+
+        a.dp = 2;
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.execute();
+
+        assert_eq!(a.dp, DATA_SIZE - 2);
+    }
+
+
 }
