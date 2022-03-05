@@ -206,6 +206,20 @@ impl VMCore {
 mod tests {
     use super::*;
 
+    fn insert_code(a: &mut VMCore) {
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::JUMP_FWD);
+        a.code.push(Opcodes::DATA_PTR_INC);
+        a.code.push(Opcodes::DATA_VALUE_INC);
+        a.code.push(Opcodes::DATA_PTR_DEC);
+        a.code.push(Opcodes::DATA_VALUE_DEC);
+        a.code.push(Opcodes::JUMP_BCK);
+    }
+
     #[test]
     fn create_vm_core() {
         let a = VMCore::new();
@@ -242,20 +256,8 @@ mod tests {
     fn compute_jumps_one_loop_correct() {
         let mut a = VMCore::new();
 
-        // this code counts from 0 to 4
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::JUMP_FWD);
-        a.code.push(Opcodes::DATA_PTR_INC);
-        a.code.push(Opcodes::DATA_VALUE_INC);
-        a.code.push(Opcodes::DATA_PTR_DEC);
-        a.code.push(Opcodes::DATA_VALUE_DEC);
-        a.code.push(Opcodes::JUMP_BCK);
-
-        // compute jumps
+        // insert the code and compute jumps
+        insert_code(&mut a);
         a.compute_jumps(11).unwrap();
 
         // assess if the jumps are correctly computed
@@ -373,5 +375,42 @@ mod tests {
         assert_eq!(a.dp, DATA_SIZE - 2);
     }
 
+    #[test]
+    fn jump_fwd_not_zero() {
 
+        let mut a = VMCore::new();
+
+        // insert the code and compute the jumps
+        insert_code(&mut a);
+        a.compute_jumps(11).unwrap();
+
+        // change registers
+        a.data[0] = 5;
+        a.pc = 6;
+
+        // compute forward jump
+        a.jump_fwd();
+
+        assert_eq!(a.pc, 6);
+    }
+
+    #[test]
+    fn jmp_fwd_zero() {
+        let mut a = VMCore::new();
+
+        // insert the code and compute the jumps
+        insert_code(&mut a);
+        a.compute_jumps(11).unwrap();
+
+        // jump
+        a.pc = 6;
+        a.jump_fwd();
+
+        assert_eq!(a.pc, 11);
+    }
+
+    #[test]
+    fn jump_bck() {
+
+    }
 }
