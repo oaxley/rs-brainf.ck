@@ -160,10 +160,6 @@ impl VMCore {
         // compute the jumps
         self.compute_jumps(n).unwrap();
 
-        for (k, v) in &self.jumps {
-            println!("[{}] = {}", k, v);
-        }
-
         // return the number of bytes read
         Ok(n)
     }
