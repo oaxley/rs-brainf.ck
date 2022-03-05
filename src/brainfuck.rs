@@ -160,6 +160,10 @@ impl VMCore {
         // compute the jumps
         self.compute_jumps(n).unwrap();
 
+        for (k, v) in &self.jumps {
+            println!("[{}] = {}", k, v);
+        }
+
         // return the number of bytes read
         Ok(n)
     }
@@ -410,7 +414,34 @@ mod tests {
     }
 
     #[test]
-    fn jump_bck() {
+    fn jump_bck_not_zero() {
+        let mut a = VMCore::new();
 
+        // insert the code and compute the jumps
+        insert_code(&mut a);
+        a.compute_jumps(11).unwrap();
+
+        // jump
+        a.data[0] = 5;
+        a.pc = 11;
+        a.jump_bck();
+
+        assert_eq!(a.pc, 6);
+    }
+
+    #[test]
+    fn jump_bck_zero() {
+        let mut a = VMCore::new();
+
+        // insert the code and compute the jumps
+        insert_code(&mut a);
+        a.compute_jumps(11).unwrap();
+
+        // jump
+        a.data[0] = 0;
+        a.pc = 11;
+        a.jump_bck();
+
+        assert_eq!(a.pc, 11);
     }
 }
